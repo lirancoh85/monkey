@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monkey Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        .monkey-img {
+            max-width: 500px;
+            width: 90%;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .monkey-img:hover {
+            transform: scale(1.05);
+        }
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐵 Welcome! 🐵</h1>
+        <img src="https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?w=800&q=80" 
+             alt="Cute Monkey" 
+             class="monkey-img">
+    </div>
+
+    <script>
+        // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyRQyYa0z8nCGPkHtf0A9nlDbA0i6k4VVhveKNwukU6_9-FbHl8Ebs_kfFFHr6ynEa6/exec';
+
+        async function trackVisitor() {
+            try {
+                // Get visitor's IP and location data
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                
+                // Prepare visitor info
+                const visitorInfo = {
+                    country: data.country_name || 'Unknown',
+                    countryCode: data.country_code || 'Unknown',
+                    city: data.city || 'Unknown',
+                    region: data.region || 'Unknown',
+                    ip: data.ip || 'Unknown',
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent
+                };
+
+                console.log('Visitor Location:', visitorInfo);
+
+                // Send to Google Sheets (if URL is configured)
+                if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(visitorInfo)
+                    });
+                    console.log('Data sent to Google Sheets!');
+                }
+
+            } catch (error) {
+                console.error('Error tracking visitor:', error);
+            }
+        }
+
+        // Track visitor when page loads
+        trackVisitor();
+    </script>
+</body>
+</html>
